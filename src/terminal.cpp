@@ -23,9 +23,13 @@ Terminal::Terminal() {
     if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1) {
         throw std::system_error(errno, std::generic_category(), "tcsetattr failed");
     }
+    // Switch to alternate screen buffer
+    write(STDOUT_FILENO, "\x1b[?1049h", 8);
 }
 
 Terminal::~Terminal() {
+    // Switch back to the main screen buffer
+    write(STDOUT_FILENO, "\x1b[?1049l", 8);
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &m_original_termios);
 }
 
